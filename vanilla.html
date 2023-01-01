@@ -16,6 +16,9 @@
 <!-- Babel -->
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+<!-- 4.2 prop type check -->
+<script src="https://unpkg.com/prop-types@15.7.2/prop-types.js"></script>
+
 <script type="text/babel">
     const root = document.getElementById("root")
 
@@ -137,21 +140,44 @@
     // }
 
     // 4.0
-    function Btn(props) {
+    // function Btn(props) {
+    //     // props는 함수에서 첫 번째이자 유일한 인자(argument)
+    //     // props는 Object이다.
+    //     console.log(props.banana, " rendered");
+    //     console.log(props); // {banana: 'Save Changes', x: 2}
+
+    //     return (
+    //         <button
+    //             onClick={props.changeValue}
+    //             style={{
+    //                 backgroundColor: "tomato",
+    //                 color: "white",
+    //                 padding: "10px 20px",
+    //                 border: 0,
+    //                 borderRadius: 10,
+    //                 // fontSize: props.big ? 18 : 14,
+    //                 fontSize: props.fontSize,
+    //             }}>{props.banana}{props.big}</button>
+    //     )
+    // }
+
+    function Btn({ changeValue, text, fontSize = 12 }) {
         // props는 함수에서 첫 번째이자 유일한 인자(argument)
         // props는 Object이다.
-        console.log("<Btn /> rendered");
-        console.log(props); // {banana: 'Save Changes', x: 2}
+        console.log(text, " rendered");
 
         return (
-            <button style={{
-                backgroundColor: "tomato",
-                color: "white",
-                padding: "10px 20px",
-                border: 0,
-                borderRadius: 10,
-                fontSize: props.big ? 18 : 14,
-            }}>{props.banana}{props.big}</button>
+            <button
+                onClick={changeValue}
+                style={{
+                    backgroundColor: "tomato",
+                    color: "white",
+                    padding: "10px 20px",
+                    border: 0,
+                    borderRadius: 10,
+                    // fontSize: props.big ? 18 : 14,
+                    fontSize: fontSize,
+                }}>{text}</button>
         )
     }
 
@@ -159,22 +185,29 @@
         return <button>Confirm</button>
     }
 
+    // React님, Btn 컴포넌트의 props 값이 변경된다면 다시 render해주세요.
+    const MemorizedBtn = React.memo(Btn);
+
+    Btn.propTypes = {
+        banana: PropTypes.string.isRequired,
+        fontSize: PropTypes.number,
+    }
+
     function App() {
         console.log("<App /> rendered");
 
-        // const [index, setIndex] = React.useState("Select your units");
-        // const onSelect = (event) => {
-        //     // console.log(event.target);
-        //     // console.log(event.target.value);
-        //     // 선택한 태그의 value 값
-        //     setIndex(event.target.value);
-        // }
-        // console.log("render w/", index);
+        // 버튼의 text value
+        const [value, setValue] = React.useState("Save Changes")
+        const changeValue = () => {
+            setValue("Revert Changes")
+        }
 
+        // HTML 태그가 아닌 컴포넌트에 이벤트리스너를 넣으면 그것은 이벤트리스너가 아니다. 단지 하나의 prop이다.
+        // props가 변경되지 않는다면 특정 컴포넌트를 다시 render하지 말 것
         return (
             <div>
-                <Btn banana="Save Changes" big={true} />
-                <Btn banana="Continue" big={false} />
+                <MemorizedBtn text={value} big={true} changeValue={changeValue} fontSize={20} />
+                <MemorizedBtn text="Continue" big={false} />
             </div>
         )
 
@@ -215,7 +248,18 @@ B
 <button onClick={onFlip}>Flip</button>
  -->
 
+
+
 <!-- 
+// const [index, setIndex] = React.useState("Select your units");
+// const onSelect = (event) => {
+//     // console.log(event.target);
+//     // console.log(event.target.value);
+//     // 선택한 태그의 value 값
+//     setIndex(event.target.value);
+// }
+// console.log("render w/", index);
+
 return (
 <div>
     <h1>Super Converter</h1>
