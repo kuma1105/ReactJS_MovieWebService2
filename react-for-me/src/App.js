@@ -20,7 +20,7 @@ function App() {
     console.log("i run only once");
     // console.log("CALL THE API...");
   }
-  useEffect(iRunOnlyOnce, []);
+  useEffect(iRunOnlyOnce, []); // [], 지켜볼 변화하는 대상이 없음
   useEffect(() => {
     // if (keyword !== "" && keyword.length > 5) {
     console.log("I run when 'keyword' changes.");
@@ -36,12 +36,58 @@ function App() {
     console.log("I run when keyword & counter change");
   }, [keyword, counter]); // keyword와 counter가 변화할 때만 코드를 실행할거야!
 
+  // 5-4
+  const [showing, setShowing] = useState(false);
+  const onClick2 = () => {
+    setShowing((prev) => !prev)
+  }
+
+  function Hello() {
+    function hiFn() {
+      console.log("created :)");
+      return byeFn; // Hello() 컴포넌트가 파괴될 때 실행된다.
+    }
+    function byeFn() {
+      console.log("destroyed :(");
+    }
+    useEffect(hiFn
+      // // Cleanup function
+      // // 컴포넌트가 destroy될 때 뭔가 할 수 있게 해줌
+      // return () => {
+      //   console.log("destroyed :(");
+      // }
+      , [])
+
+    // 
+
+    useEffect(function () {
+      console.log("hi :)");
+      return function () {
+        console.log("bye :(");
+      }
+    }, [])
+
+    //
+
+    useEffect(() => {
+      console.log("hi :)");
+      return () => console.log("bye :(");
+    }, [])
+
+    return (
+      <h1>Hello</h1>
+    )
+  }
+
+
   return (
     <div>
       <input value={keyword} onChange={onChange} type="text" placeholder="Search here..." />
       <h1 className={styles.title}>{counter}</h1>
       {/* <Button onClick={onClick} text={"Continue"} /> */}
       <button onClick={onClick}>click me</button>
+      {showing ? <Hello /> : null}
+      <button onClick={onClick2}>{showing ? "Hide" : "Show"}</button>
     </div>
   );
 }
@@ -49,3 +95,5 @@ function App() {
 export default App;
 
 // npm install prop-types
+
+// ReactJS는 state를 변화시킬 때 component를 재실행시킴
